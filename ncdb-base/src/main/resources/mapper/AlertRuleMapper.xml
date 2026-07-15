@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.AlertRuleMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.base.entity.server.AlertRule">
+            <id property="id" column="ID" jdbcType="BIGINT"/>
+            <result property="name" column="NAME" jdbcType="VARCHAR"/>
+            <result property="memo" column="MEMO" jdbcType="VARCHAR"/>
+            <result property="processor" column="PROCESSOR" jdbcType="VARCHAR"/>
+            <result property="parameters" column="PARAMETERS" jdbcType="VARCHAR"/>
+            <result property="groups" column="GROUPS" jdbcType="VARCHAR"/>
+            <result property="tableName" column="TABLE_NAME" jdbcType="VARCHAR"/>
+            <result property="code" column="CODE" jdbcType="VARCHAR"/>
+            <result property="ruleDesc" column="RULE_DESC" jdbcType="VARCHAR"/>
+            <result property="status" column="STATUS" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,NAME,MEMO,
+        PROCESSOR,PARAMETERS,GROUPS,
+        TABLE_NAME,CODE,RULE_DESC,
+        STATUS
+    </sql>
+</mapper>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.device.mapper.DeviceMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.device.entity.server.Device">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="deviceIp" column="DEVICE_IP" jdbcType="VARCHAR"/>
+        <result property="deviceSshUsr" column="DEVICE_SSH_USR" jdbcType="VARCHAR"/>
+        <result property="deviceSshPwd" column="DEVICE_SSH_PWD" jdbcType="VARCHAR"/>
+        <result property="remark" column="REMARK" jdbcType="VARCHAR"/>
+        <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="enableStatus" column="ENABLE_STATUS" jdbcType="VARCHAR"/>
+        <result property="connStatus" column="CONN_STATUS" jdbcType="VARCHAR"/>
+        <result property="createUser" column="CREATE_USER" jdbcType="VARCHAR"/>
+        <result property="updateUser" column="UPDATE_USER" jdbcType="VARCHAR"/>
+        <result property="nodeId" column="NODE_ID" jdbcType="BIGINT"/>
+        <result property="port" column="PORT" jdbcType="INTEGER"/>
+        <result property="scriptVersion" column="SCRIPT_VERSION" jdbcType="VARCHAR"/>
+        <result property="archType" column="ARCH_TYPE" jdbcType="VARCHAR"/>
+        <result property="cpuCore" column="CPU_CORE" jdbcType="INTEGER"/>
+        <result property="memTotal" column="MEM_TOTAL" jdbcType="VARCHAR"/>
+        <result property="osName" column="OS_NAME" jdbcType="VARCHAR"/>
+        <result property="osVersion" column="OS_VERSION" jdbcType="VARCHAR"/>
+        <result property="cpuDesc" column="CPU_DESC" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,DEVICE_IP,DEVICE_SSH_USR,
+        DEVICE_SSH_PWD,REMARK,CREATE_TIME,
+        UPDATE_TIME,ENABLE_STATUS,
+        CONN_STATUS,CREATE_USER,
+        UPDATE_USER,NODE_ID,PORT,
+        SCRIPT_VERSION,ARCH_TYPE,CPU_CORE,
+        MEM_TOTAL
+    </sql>
+
+    <select id="getDeviceList" parameterType="com.dm.cn.common.param.DeviceParam" resultMap="BaseResultMap">
+        SELECT
+        T.ID,
+        T.DEVICE_IP,
+        T.CREATE_USER,
+        T.CREATE_TIME,
+        NULL AS DEVICE_AREA,
+        DN.NODE_NAME AS DEVICE_HOME,
+        T.DEVICE_SSH_PWD,
+        T.DEVICE_SSH_USR,
+        T.ENABLE_STATUS,
+        T.CONN_STATUS,
+        T.REMARK,
+        T.UPDATE_TIME,
+        T.NODE_ID,
+        T.PORT,
+        T.ARCH_TYPE,
+        T.CPU_CORE,
+        T.MEM_TOTAL,
+        T.DISK_TOTAL,
+        T.OS_NAME,
+        T.OS_VERSION,
+        T.CPU_DESC
+        FROM
+        T_DEVICE T
+        INNER JOIN T_DEVICE_NODE DN ON T.NODE_ID=DN.ID
+        <where>
+            <if test="params.idList != null and params.idList.size() > 0">
+                AND T.NODE_ID IN
+                <foreach collection="params.idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="params.deviceHome != null and params.deviceHome != ''">
+                AND DN.NODE_NAME like concat('%', #{params.deviceHome}, '%')
+            </if>
+            <if test="params.connStatus != null and params.connStatus != ''">
+                AND T.CONN_STATUS = #{params.connStatus}
+            </if>
+            <if test="params.deviceIp != null and params.deviceIp != ''">
+                AND T.DEVICE_IP like concat('%', #{params.deviceIp}, '%')
+            </if>
+            <if test="beginTime != null and endTime != null and beginTime != '' and endTime != '' and beginTime != 'null' and endTime != 'null'">
+                AND T.CREATE_TIME BETWEEN #{beginTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY T.CREATE_TIME DESC
+    </select>
+
+    <select id="getDevicePath" parameterType="long" resultType="String">
+        WITH
+        <if test="isH2 == true ">
+            RECURSIVE
+        </if>
+        TREE_DEVICE (ID, UPPER_ID, NODE_NAME, LEVEL) AS (
+        SELECT A.ID, A.UPPER_ID, A.NODE_NAME, A.LEVEL
+        FROM T_DEVICE_NODE A
+        WHERE A.ID = #{deviceNodeId}
+        UNION ALL
+        SELECT B.ID, B.UPPER_ID, B.NODE_NAME, B.LEVEL
+        FROM TREE_DEVICE
+        INNER JOIN T_DEVICE_NODE B ON TREE_DEVICE.UPPER_ID = B.ID
+        )
+        <if test="isH2 == true ">
+            SELECT GROUP_CONCAT(NODE_NAME ORDER BY LEVEL SEPARATOR '/')
+        </if>
+        <if test="isH2 != true ">
+            SELECT LISTAGG(NODE_NAME,'/')WITHIN GROUP(ORDER BY LEVEL)
+        </if>
+        FROM TREE_DEVICE WHERE LEVEL > 1
+    </select>
+
+    <select id="getChildIdList" parameterType="long" resultType="String">
+        WITH
+        <if test="isH2 == true ">
+            RECURSIVE
+        </if>
+        TREE_DEVICE (ID, UPPER_ID, NODE_NAME, LEVEL) AS (
+        SELECT A.ID, A.UPPER_ID, A.NODE_NAME, A.LEVEL
+        FROM T_DEVICE_NODE A
+        WHERE A.ID =
+        #{deviceNodeId}
+        UNION ALL
+        SELECT B.ID, B.UPPER_ID, B.NODE_NAME, B.LEVEL
+        FROM TREE_DEVICE
+        INNER JOIN T_DEVICE_NODE B
+        ON TREE_DEVICE.ID = B.UPPER_ID
+        )
+        SELECT ID
+        FROM TREE_DEVICE
+    </select>
+
+    <select id="getMonitorList" parameterType="com.dm.cn.device.entity.server.Device" resultMap="BaseResultMap">
+        SELECT D.ID,D.DEVICE_IP,D.ENABLE_STATUS,D.CONN_STATUS,D.NODE_ID,
+        NULL AS DEVICE_AREA
+        FROM T_DEVICE D
+        INNER JOIN T_DEVICE_NODE DN ON D.NODE_ID=DN.ID
+        <where>
+            --筛选启用的设备
+            D.ENABLE_STATUS = '0'
+            <if test="params.deviceId != null and params.deviceId != ''">
+                D.ID=#{params.deviceId}
+            </if>
+            <if test="params.deviceIp != null and params.deviceIp != ''">
+                D.DEVICE_IP=#{params.deviceIp}
+            </if>
+            <if test="params.nodeId != null and params.nodeId != ''">
+                AND D.NODE_ID IN (
+                WITH
+                <if test="params.isH2 == true ">
+                    RECURSIVE
+                </if>
+                tree_device_node (id,upper_id) as (
+                select a.id,a.upper_id
+                from t_device_node a
+                where a.id = #{params.nodeId}
+                union all
+                select b.id,b.upper_id
+                from tree_device_node
+                inner join t_device_node b on tree_device_node.id= b.upper_id
+                )
+                select id from tree_device_node)
+            </if>
+        </where>
+    </select>
+
+    <!--yth 2024/06/24-->
+    <select id="getNodeDeviceList" resultMap="BaseResultMap">
+        SELECT T.ID, DEVICE_IP, DN.NODE_NAME AS DEVICE_HOME
+        FROM T_DEVICE T
+                 INNER JOIN T_DEVICE_NODE DN ON T.NODE_ID = DN.ID
+        WHERE ENABLE_STATUS = '0'
+          AND CONN_STATUS = '0'
+    </select>
+
+    <select id="getDeviceByIp" parameterType="com.dm.cn.device.entity.server.Device" resultMap="BaseResultMap">
+        SELECT
+        T.ID,
+        T.DEVICE_IP,
+        T.NODE_ID,
+        NULL AS DEVICE_AREA,
+        DN.NODE_NAME AS DEVICE_HOME,
+        T.ENABLE_STATUS,
+        T.CONN_STATUS
+        FROM T_DEVICE T
+        INNER JOIN T_DEVICE_NODE DN ON T.NODE_ID=DN.ID
+        <where>
+            <if test="deviceIp != null and deviceIp != ''">
+                T.DEVICE_IP=#{deviceIp}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDeviceIpInfoList" resultType="com.dm.cn.device.entity.server.Device">
+        SELECT T_DEVICE_NODE.ID DEVICE_HOME_ID,T_DEVICE.DEVICE_IP
+        FROM T_DEVICE,T_DEVICE_NODE
+        WHERE T_DEVICE.NODE_ID=T_DEVICE_NODE.ID
+        AND ENABLE_STATUS='0'
+        <!-- 设备范围 -->
+        <if test="deviceList !=null and deviceList.size()>0 ">
+            AND DEVICE_IP IN
+            <foreach collection="deviceList" item="deviceIp" open="(" separator="," close=")">
+                #{deviceIp}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getDeviceMessageById" resultType="com.dm.cn.device.entity.vo.SysJobLogVO">
+        SELECT OBJECT_ID,MONITOR_VALUES,JOB_MESSAGE,CREATE_TIME,ALARM_CONDITION
+        FROM SYS_JOB_LOG
+        <where>
+            (OBJECT_ID,CREATE_TIME) IN(
+            SELECT OBJECT_ID,MAX(CREATE_TIME)
+            FROM SYS_JOB_LOG
+            where OBJECT_ID = #{deviceId}
+            GROUP BY OBJECT_ID)
+            and ALARM_CONDITION in('3','4','5')
+        </where>
+    </select>
+
+</mapper>

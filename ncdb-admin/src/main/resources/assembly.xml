@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <!-- 可自定义，这里指定的是项目环境 -->
+    <!-- xxx.tar.gz  -->
+    <id>package</id>
+
+    <!-- 打包的类型，如果有N个，将会打N个类型的包 -->
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <fileSets>
+        <!-- 配置文件 打包-打包至config目录下 -->
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>config</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+            <includes>
+                <include>*.yml</include>
+            </includes>
+        </fileSet>
+        <!--启动脚本-->
+        <fileSet>
+            <directory>${project.parent.basedir}/config</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+            <includes>
+                <include>server.sh</include>
+            </includes>
+        </fileSet>
+        <!-- 配置文件目录 -->
+        <fileSet>
+            <directory>${project.parent.basedir}/config</directory>
+            <outputDirectory>config</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+            <includes>
+                <include>**.sh</include>
+                <include>*.yaml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.parent.basedir}/config/encryptor</directory>
+            <outputDirectory>config/encryptor</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <!-- H2数据库 -->
+        <fileSet>
+            <directory>${project.parent.basedir}/db/h2</directory>
+            <outputDirectory>h2</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <!-- prometheus -->
+        <fileSet>
+            <directory>${project.parent.basedir}/prometheus</directory>
+            <outputDirectory>prometheus</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*.tar.gz</include>
+                <include>*.sh</include>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <!-- 依赖库 -->
+            <outputDirectory>lib</outputDirectory>
+            <scope>runtime</scope>
+            <fileMode>0755</fileMode>
+            <excludes>
+                <exclude>${project.groupId}:${project.artifactId}</exclude>
+            </excludes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>${project.groupId}:${project.artifactId}</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

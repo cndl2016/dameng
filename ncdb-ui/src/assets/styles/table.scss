@@ -1,0 +1,179 @@
+/*  表格  */
+.ncdb-tb {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  /*  头部搜索框/按钮等  */
+  .top {
+    //height: 32px;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 24px;
+    row-gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    .el-form .el-form-item {
+      margin-bottom: 0 !important;
+    }
+
+    .top-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: space-around;
+      justify-content: space-around;
+    }
+
+    /*  输入框公共样式  */
+    .el-input {
+      width: 188px;
+    }
+
+    .el-input__prefix {
+      // width: 74px;
+    }
+
+    .el-input--prefix .el-input__inner {
+      // padding-left: 76px !important;
+
+      &::placeholder {
+        font-weight: 400;
+      }
+    }
+
+    /*  日期选择控件  */
+    .el-range-editor {
+      width: 295px;
+      &::before {
+        content: '创建时间：';
+        position: absolute;
+        margin-left: -204px;
+        margin-top: 2px;
+        width: 70px;
+        color: #666666;
+      }
+
+      input:first-of-type {
+        margin-left: 70px;
+      }
+
+      .el-range__icon {
+        position: absolute;
+        right: 10px;
+        z-index: 7;
+      }
+
+      .el-range__close-icon {
+        margin-top: 2px;
+        z-index: 8;
+      }
+    }
+
+    /*  重置按钮  */
+    .icon-reset {
+      color: #3363FF;
+      border: 0px;
+    }
+  }
+
+  .my-table {
+    flex-grow: 1;
+    height: calc(100vh - 270px);
+    min-height: 200px;
+    overflow: auto;
+    .el-table-column--selection .cell {
+      padding-left: 10px;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(217, 217, 217, 0.8);
+    border-radius: 32px;
+    opacity: 0.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 32px;
+    opacity: 0.2;
+  }
+}
+
+/*  详细信息table  */
+.detail-tb {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  line-height: 44px;
+  margin-bottom: 20px;
+
+  td {
+    border: 1px solid #eeeeee !important;
+  }
+
+  .title {
+    width: 120px;
+    background: #FAFAFA;
+    text-align: center;
+  }
+
+  .content {
+    text-align: left;
+    padding-left: 10px;
+  }
+}
+
+/*  任务日志  */
+.ncdb-tb {
+  &.task {
+    .oneLine {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .table-expand {
+      font-size: 0;
+      label {
+        width: 70px;
+        color: #99a9bf;
+      }
+      .el-form-item {
+        min-width: 10%;
+        margin-left: 60px;
+        margin-right: 0;
+        margin-bottom: 0 !important;
+      }
+      .el-form-item__content{
+        margin-top: 4px;
+        margin-left: 4px;
+      }
+    }
+    .el-progress-bar{
+      width: 90px;
+    }
+  }
+}
+.ncdb-dialog{
+  &.task{
+    .tooltip-refresh {
+      position: absolute;
+      margin-top: -62px;
+      margin-left: 80px;
+    }
+  }
+}
+/** 固定表头 */
+.my-table {
+  .el-table {
+    overflow: visible;
+  }
+  .el-table__header-wrapper{
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+  }
+}

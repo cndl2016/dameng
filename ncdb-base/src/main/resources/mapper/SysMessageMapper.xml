@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.SysMessageMapper">
+
+    <select id="getSysMessagePageList" resultType="com.dm.cn.base.entity.vo.SysMessageVO">
+        select *
+        from (select    i.*,
+                        j.DEVICE_IP   as NODE_IP,
+                        j.PORT        as NODE_PORT,
+                        NULL          INSTANCE_ID,
+                        NULL          INSTANCE_TYPE,
+                        NULL          DB_TYPE,
+                        j.create_user
+                from SYS_MESSAGE i
+                inner join T_DEVICE j
+                on i.object_id = j.id
+                where i.table_name = 't_device'
+        )
+        <where>
+            <if test="param.searchValue != null and param.searchValue != ''">
+                AND (RESOURCE_NAME LIKE concat('%', #{param.searchValue}, '%') OR CONTENT LIKE concat('%', #{param.searchValue}, '%'))
+            </if>
+            <if test="param.time != null and param.time != ''">
+                AND CREATE_TIME &gt; #{time}
+            </if>
+            <if test="param.alarmLevel != null and param.alarmLevel != ''">
+                AND MSG_LEVEL = #{param.alarmLevel}
+            </if>
+        </where>
+        order by
+                FIELD(ACTIVE_STATE, 'live', 'death'),
+                create_time desc
+    </select>
+
+    <select id="getSysMessageVoList" resultType="com.dm.cn.base.entity.vo.SysMessageVO">
+        SELECT * from (
+        SELECT i.*,
+        j.DEVICE_IP   as NODE_IP,
+        j.PORT        as NODE_PORT,
+        NULL          INSTANCE_ID,
+        NULL          INSTANCE_NAME
+        FROM SYS_MESSAGE i,
+        T_DEVICE j
+        WHERE i.object_id = j.id
+        )
+        WHERE 1 = 1
+        <if test="param.activeState != null and param.activeState != ''">
+            and active_state = #{param.activeState}
+        </if>
+        <if test="queryTime != null and queryTime != ''">
+            and create_time >= #{queryTime}
+        </if>
+        order by create_time desc
+    </select>
+
+</mapper>

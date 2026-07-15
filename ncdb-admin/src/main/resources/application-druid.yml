@@ -1,0 +1,38 @@
+# 数据源配置
+spring:
+    datasource:
+        druid:
+            stat-view-servlet:
+                enabled: true
+                loginUsername: admin
+                loginPassword: 123456
+        dynamic:
+            druid:
+                initial-size: 5
+                min-idle: 5
+                maxActive: 20
+                maxWait: 60000
+                timeBetweenEvictionRunsMillis: 60000
+                minEvictableIdleTimeMillis: 300000
+                validationQuery: SELECT 1 FROM DUAL
+                testWhileIdle: true
+                testOnBorrow: false
+                testOnReturn: false
+                poolPreparedStatements: true
+                maxPoolPreparedStatementPerConnectionSize: 20
+                filters: stat,slf4j
+                connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+            datasource:
+                # 主库数据源
+                master:
+                    driver-class-name: dm.jdbc.driver.DmDriver
+                    # docker容器配置模式
+                    # url: jdbc:h2:tcp://127.0.0.1:8083//opt/ncdb-admin/db/single;SCHEMA=MANAGER;
+                    # Win Server模式
+                    url: jdbc:dm://localhost:5236?schema=TEST_SCAFFOLD&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&useSSL=true&characterEncoding=UTF-8
+                    # Win 嵌入式模式
+                    # url: jdbc:h2:file:D:/代码/DMNCDB_Single/ncdb-manager/db/single;SCHEMA=TEST_SINGLE;
+                    # Linux Server模式
+                    # url: jdbc:h2:tcp://10.14.1.136:8083/~/IdeaProjects/ncdb-single/db/single;SCHEMA=TEST_SINGLE;
+                    username: SYSDBA
+                    password: Dameng@8888

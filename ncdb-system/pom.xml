@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dameng</artifactId>
+        <groupId>com.dameng</groupId>
+        <version>3.8.6</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ncdb-system</artifactId>
+
+    <description>
+        system系统模块
+    </description>
+
+    <properties>
+        <cas.client.verison>3.5.1</cas.client.verison>
+        <jaudiotagger.verison>2.0.3</jaudiotagger.verison>
+        <jna.verison>5.7.0</jna.verison>
+        <vosk.verison>0.3.32</vosk.verison>
+    </properties>
+
+    <dependencies>
+
+        <!-- 任务调度-->
+        <dependency>
+            <groupId>com.dameng</groupId>
+            <artifactId>ncdb-job</artifactId>
+            <version>${dameng.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>${cas.client.verison}</version>
+        </dependency>
+        <!-- spring security cas-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-cas</artifactId>
+        </dependency>
+
+        <!-- 获取音频信息 -->
+        <dependency>
+            <groupId>org</groupId>
+            <artifactId>jaudiotagger</artifactId>
+            <version>${jaudiotagger.verison}</version>
+        </dependency>
+
+        <!-- 语音识别 -->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.verison}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alphacephei</groupId>
+            <artifactId>vosk</artifactId>
+            <version>${vosk.verison}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

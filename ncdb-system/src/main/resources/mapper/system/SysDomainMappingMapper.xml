@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.system.mapper.SysDomainMappingMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.system.entity.server.SysDomainMapping">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="domainId" column="DOMAIN_ID" jdbcType="BIGINT"/>
+        <result property="managerUserProp" column="MANAGER_USER_PROP" jdbcType="VARCHAR"/>
+        <result property="domainUserProp" column="DOMAIN_USER_PROP" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,DOMAIN_ID,MANAGER_USER_PROP,
+        DOMAIN_USER_PROP
+    </sql>
+
+    <insert id="batchDomainMapping">
+        insert into SYS_DOMAIN_MAPPING values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.id},#{item.domainId},#{item.managerUserProp},#{item.domainUserProp})
+        </foreach>
+    </insert>
+
+    <delete id="batchDeleteByDomainId">
+        DELETE
+        FROM SYS_DOMAIN_MAPPING
+        WHERE DOMAIN_ID = #{domainId}
+    </delete>
+
+    <select id="selectByDomainId" resultMap="BaseResultMap">
+        SELECT DOMAIN_ID, MANAGER_USER_PROP, DOMAIN_USER_PROP
+        FROM SYS_DOMAIN_MAPPING
+        WHERE DOMAIN_ID = #{domainId}
+    </select>
+</mapper>

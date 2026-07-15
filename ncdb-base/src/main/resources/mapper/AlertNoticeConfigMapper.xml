@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.AlertNoticeConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.base.entity.server.AlertNoticeConfig">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="objectId" column="OBJECT_ID" jdbcType="BIGINT"/>
+        <result property="alertRuleId" column="ALERT_RULE_ID" jdbcType="BIGINT"/>
+        <result property="alertConfigId" column="ALERT_CONFIG_ID" jdbcType="BIGINT"/>
+        <result property="alarmMessageId" column="ALARM_MESSAGE_ID" jdbcType="BIGINT"/>
+        <result property="recipient" column="RECIPIENT" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,OBJECT_ID,ALERT_RULE_ID,ALERT_CONFIG_ID,ALARM_MESSAGE_ID,RECIPIENT
+    </sql>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.system.mapper.SysDomainMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.system.entity.server.SysDomain">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="serverHost" column="SERVER_HOST" jdbcType="VARCHAR"/>
+        <result property="serverPort" column="SERVER_PORT" jdbcType="INTEGER"/>
+        <result property="sslEnable" column="SSL_ENABLE" jdbcType="CHAR"/>
+        <result property="baseDn" column="BASE_DN" jdbcType="VARCHAR"/>
+        <result property="deptFilter" column="DEPT_FILTER" jdbcType="VARCHAR"/>
+        <result property="userFilter" column="USER_FILTER" jdbcType="VARCHAR"/>
+        <result property="adminAccount" column="ADMIN_ACCOUNT" jdbcType="VARCHAR"/>
+        <result property="adminPass" column="ADMIN_PASS" jdbcType="VARCHAR"/>
+        <result property="createUser" column="CREATE_USER" jdbcType="VARCHAR"/>
+        <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="updateUser" column="UPDATE_USER" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="syncEnable" column="SYNC_ENABLE" jdbcType="CHAR"/>
+        <result property="syncCron" column="SYNC_CRON" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID
+        ,SERVER_HOST,SERVER_PORT,
+        SSL_ENABLE,BASE_DN,DEPT_FILTER,
+        USER_FILTER,ADMIN_ACCOUNT,ADMIN_PASS,
+        CREATE_USER,CREATE_TIME,UPDATE_USER,
+        UPDATE_TIME
+    </sql>
+
+    <insert id="insertDomain" parameterType="com.dm.cn.system.entity.server.SysDomain">
+        INSERT INTO SYS_DOMAIN (
+        <if test="id != null and id != 0">ID,</if>
+        <if test="serverHost != null and serverHost != ''">SERVER_HOST,</if>
+        <if test="serverPort != null">SERVER_PORT,</if>
+        <if test="sslEnable != null and sslEnable != ''">SSL_ENABLE,</if>
+        <if test="baseDn != null and baseDn != ''">BASE_DN,</if>
+        <if test="deptFilter != null and deptFilter != ''">DEPT_FILTER,</if>
+        <if test="userFilter != null and userFilter != ''">USER_FILTER,</if>
+        <if test="adminAccount != null and adminAccount != ''">ADMIN_ACCOUNT,</if>
+        <if test="adminPass != null and adminPass != ''">ADMIN_PASS,</if>
+        <if test="createUser != null and createUser != ''">CREATE_USER,</if>
+        CREATE_TIME
+        )VALUES(
+        <if test="id != null and id != 0">#{id},</if>
+        <if test="serverHost != null and serverHost != ''">#{serverHost},</if>
+        <if test="serverPort != null">#{serverPort},</if>
+        <if test="sslEnable != null and sslEnable != ''">#{sslEnable},</if>
+        <if test="baseDn != null and baseDn != ''">#{baseDn},</if>
+        <if test="deptFilter != null and deptFilter != ''">#{deptFilter},</if>
+        <if test="userFilter != null and userFilter != ''">#{userFilter},</if>
+        <if test="adminAccount != null and adminAccount != ''">#{adminAccount},</if>
+        <if test="adminPass != null and adminPass != ''">#{adminPass},</if>
+        <if test="createUser != null and createUser != ''">#{createUser},</if>
+        now()
+        )
+    </insert>
+
+    <update id="updateDomain" parameterType="com.dm.cn.system.entity.server.SysDomain">
+        UPDATE SYS_DOMAIN
+        <set>
+            <if test="serverHost != null and serverHost != ''">SERVER_HOST = #{serverHost},</if>
+            <if test="serverPort != null">SERVER_PORT = #{serverPort},</if>
+            <if test="sslEnable != null and sslEnable != ''">SSL_ENABLE = #{sslEnable},</if>
+            <if test="baseDn != null and baseDn != ''">BASE_DN = #{baseDn},</if>
+            <if test="deptFilter != null and deptFilter != ''">DEPT_FILTER = #{deptFilter},</if>
+            <if test="userFilter != null and userFilter != ''">USER_FILTER = #{userFilter},</if>
+            <if test="adminAccount != null and adminAccount != ''">ADMIN_ACCOUNT = #{adminAccount},</if>
+            <if test="adminPass != null and adminPass != ''">ADMIN_PASS = #{adminPass},</if>
+            <if test="syncEnable != null and syncEnable != ''">SYNC_ENABLE = #{syncEnable},</if>
+            <if test="syncCron != null and syncCron != ''">SYNC_CRON = #{syncCron},</if>
+            <if test="updateUser != null and updateUser != ''">UPDATE_USER = #{updateUser},</if>
+            update_time = now()
+        </set>
+        WHERE ID = #{id}
+    </update>
+    <delete id="deleteDomainById">
+        DELETE
+        FROM SYS_DOMAIN
+        WHERE ID = #{domainId}
+    </delete>
+    <!--h2-->
+    <select id="selectDomainList" resultMap="BaseResultMap">
+        SELECT ID,
+            CONCAT(SERVER_HOST,':',SERVER_PORT) AS domainAddress,
+               SSL_ENABLE,
+               BASE_DN,
+               DEPT_FILTER,
+               USER_FILTER,
+               ADMIN_ACCOUNT,
+               ADMIN_PASS,
+               CREATE_USER,
+               CREATE_TIME,
+               UPDATE_USER,
+               UPDATE_TIME,
+               SYNC_ENABLE,
+               SYNC_CRON
+        FROM SYS_DOMAIN u
+        <where>
+            <if test="params.beginTime != null and params.beginTime != '' and params.endTime != null and params.endTime != ''" >
+                AND u.create_time BETWEEN #{params.beginTime} AND #{params.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="checkDomainUnique" parameterType="com.dm.cn.system.entity.server.SysDomain" resultMap="BaseResultMap">
+        SELECT ID
+        FROM SYS_DOMAIN
+        WHERE SERVER_HOST = #{serverHost}
+        AND SERVER_PORT = #{serverPort}
+        LIMIT 1
+    </select>
+
+    <select id="selectDomainById" resultMap="BaseResultMap">
+        SELECT ID,
+            SERVER_HOST,
+            SERVER_PORT,
+               SSL_ENABLE,
+               BASE_DN,
+               DEPT_FILTER,
+               USER_FILTER,
+               ADMIN_ACCOUNT,
+               ADMIN_PASS,
+               CREATE_USER,
+               CREATE_TIME,
+               UPDATE_USER,
+               UPDATE_TIME,
+               SYNC_ENABLE,
+               SYNC_CRON
+        FROM SYS_DOMAIN
+        WHERE ID = #{domainId}
+    </select>
+
+    <select id="countDomainUser" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+                FROM SYS_USER
+                WHERE DOMAIN_ID = #{domainId}
+                        AND DEL_FLAG = '0'
+
+    </select>
+
+    <select id="selectDomainTaskList" resultMap="BaseResultMap">
+        SELECT ID, SYNC_ENABLE, SYNC_CRON
+        FROM SYS_DOMAIN
+        WHERE SYNC_ENABLE = '1'
+    </select>
+</mapper>

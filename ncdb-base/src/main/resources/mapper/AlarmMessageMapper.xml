@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.AlarmMessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.base.entity.server.AlarmMessage">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="sendMethod" column="SEND_METHOD" jdbcType="VARCHAR"/>
+        <result property="httpUrl" column="HTTP_URL" jdbcType="VARCHAR"/>
+        <result property="httpSign" column="HTTP_SIGN" jdbcType="VARCHAR"/>
+        <result property="httpsProxy" column="HTTPS_PROXY" jdbcType="VARCHAR"/>
+        <result property="toUser" column="TO_USER" jdbcType="VARCHAR"/>
+        <result property="serviceCd" column="SERVICE_CD" jdbcType="VARCHAR"/>
+        <result property="clientCd" column="CLIENT_CD" jdbcType="VARCHAR"/>
+        <result property="smsType" column="SMS_TYPE" jdbcType="VARCHAR"/>
+        <result property="toPhone" column="TO_PHONE" jdbcType="VARCHAR"/>
+        <result property="isUse" column="IS_USE" jdbcType="CHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,SEND_METHOD,
+        HTTP_URL,HTTP_SIGN,HTTPS_PROXY,
+        TO_USER,SERVICE_CD,CLIENT_CD,
+        SMS_TYPE,TO_PHONE,IS_USE
+    </sql>
+</mapper>

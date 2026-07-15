@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.SysJobLogMapper">
+
+    <resultMap id="SysJobLogResult" type="com.dm.cn.base.entity.server.SysJobLog">
+            <id property="jobLogId" column="JOB_LOG_ID" jdbcType="BIGINT"/>
+            <result property="jobMessage" column="JOB_MESSAGE" jdbcType="VARCHAR"/>
+            <result property="status" column="STATUS" jdbcType="CHAR"/>
+            <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+            <result property="monitorValues" column="MONITOR_VALUES" jdbcType="FLOAT"/>
+            <result property="alarmCondition" column="ALARM_CONDITION" jdbcType="VARCHAR"/>
+            <result property="alarmValues" column="ALARM_VALUES" jdbcType="FLOAT"/>
+            <result property="objectId" column="OBJECT_ID" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        JOB_LOG_ID,JOB_MESSAGE,STATUS,
+        CREATE_TIME,MONITOR_VALUES,
+        ALARM_CONDITION,ALARM_VALUES,OBJECT_ID
+    </sql>
+
+    <delete id="clearExpiredLog">
+        DELETE
+        FROM SYS_JOB_LOG
+        WHERE CREATE_TIME &lt; #{time}
+    </delete>
+
+</mapper>

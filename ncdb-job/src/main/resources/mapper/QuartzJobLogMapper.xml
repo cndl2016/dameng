@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.quartz.mapper.QuartzJobLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.quartz.entity.server.QuartzJobLog">
+            <id property="logId" column="LOG_ID" jdbcType="BIGINT"/>
+            <result property="jobName" column="JOB_NAME" jdbcType="VARCHAR"/>
+            <result property="trigName" column="TRIG_NAME" jdbcType="VARCHAR"/>
+            <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
+            <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
+            <result property="content" column="CONTENT" jdbcType="VARCHAR"/>
+            <result property="status" column="STATUS" jdbcType="CHAR"/>
+            <result property="duration" column="DURATION" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        LOG_ID,JOB_NAME,TRIG_NAME,
+        START_TIME,END_TIME,CONTENT,
+        STATUS,DURATION
+    </sql>
+
+</mapper>

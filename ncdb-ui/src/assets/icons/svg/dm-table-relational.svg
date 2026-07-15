@@ -1,0 +1,8 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.5 3C1.5 2.72386 1.72386 2.5 2 2.5H14C14.2761 2.5 14.5 2.72386 14.5 3V13C14.5 13.2761 14.2761 13.5 14 13.5H2C1.72386 13.5 1.5 13.2761 1.5 13V3Z" stroke="#FAAD14"/>
+<rect x="1.5" y="5" width="13" height="1" fill="#FAAD14"/>
+<rect x="6.25" y="5" width="8" height="1" transform="rotate(90 6.25 5)" fill="#FAAD14"/>
+<rect x="10.75" y="5" width="8" height="1" transform="rotate(90 10.75 5)" fill="#FAAD14"/>
+<rect x="1.5" y="9" width="13" height="1" fill="#FAAD14"/>
+<rect x="2" y="3" width="12" height="2" fill="#FAAD14"/>
+</svg>

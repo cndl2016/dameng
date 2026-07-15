@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.AlertNoticeMessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.base.entity.server.AlertNoticeMessage">
+        <id property="id" column="ID" jdbcType="BIGINT"/>
+        <result property="objectId" column="OBJECT_ID" jdbcType="BIGINT"/>
+        <result property="recipient" column="RECIPIENT" jdbcType="VARCHAR"/>
+        <result property="title" column="TITLE" jdbcType="VARCHAR"/>
+        <result property="content" column="CONTENT" jdbcType="VARCHAR"/>
+        <result property="alertLevel" column="ALERT_LEVEL" jdbcType="VARCHAR"/>
+        <result property="noticeMethod" column="NOTICE_METHOD" jdbcType="CHAR"/>
+        <result property="noticeTime" column="NOTICE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="isSuccess" column="IS_SUCCESS" jdbcType="CHAR"/>
+        <result property="errorMessage" column="ERROR_MESSAGE" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,OBJECT_ID,RECIPIENT,
+        TITLE,CONTENT,ALERT_LEVEL,
+        NOTICE_METHOD,NOTICE_TIME,IS_SUCCESS,
+        ERROR_MESSAGE
+    </sql>
+
+</mapper>

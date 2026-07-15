@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.base.mapper.AlertConfigMapper">
+
+    <select id="getAllDevices" resultType="com.dm.cn.base.entity.model.DeviceNormal">
+        select ID AS "DEVICE_ID", DEVICE_IP AS "DEVICE_NAME", DEVICE_IP AS MANAGE_IP, 0 AS PORT, 't_device' as TABLE_NAME from T_DEVICE
+    </select>
+
+</mapper>

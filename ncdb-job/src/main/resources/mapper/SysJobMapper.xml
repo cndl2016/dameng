@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.quartz.mapper.SysJobMapper">
+
+    <resultMap id="BaseResultMap" type="com.dm.cn.quartz.entity.server.SysJob">
+            <id property="jobId" column="JOB_ID" jdbcType="BIGINT"/>
+            <result property="jobName" column="JOB_NAME" jdbcType="VARCHAR"/>
+            <result property="jobGroup" column="JOB_GROUP" jdbcType="VARCHAR"/>
+            <result property="jobParam" column="JOB_PARAM" jdbcType="VARCHAR"/>
+            <result property="beanTarget" column="BEAN_TARGET" jdbcType="VARCHAR"/>
+            <result property="beanMethodTarget" column="BEAN_METHOD_TARGET" jdbcType="VARCHAR"/>
+            <result property="cronExpression" column="CRON_EXPRESSION" jdbcType="VARCHAR"/>
+            <result property="concurrent" column="CONCURRENT" jdbcType="CHAR"/>
+            <result property="misfirePolicy" column="MISFIRE_POLICY" jdbcType="VARCHAR"/>
+            <result property="createUser" column="CREATE_USER" jdbcType="VARCHAR"/>
+            <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+            <result property="updateUser" column="UPDATE_USER" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+            <result property="remark" column="REMARK" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        JOB_ID,JOB_NAME,JOB_GROUP,
+        JOB_PARAM,BEAN_TARGET,BEAN_METHOD_TARGET,
+        CRON_EXPRESSION,CONCURRENT,MISFIRE_POLICY,
+        CREATE_USER,CREATE_TIME,UPDATE_USER,
+        UPDATE_TIME,REMARK
+    </sql>
+
+</mapper>

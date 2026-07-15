@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.cn.system.mapper.SysUserMapper">
+
+    <resultMap type="com.dm.cn.common.core.domain.SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="email" column="email"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="password" column="password"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="loginIp" column="login_ip"/>
+        <result property="loginDate" column="login_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="objectGuid" column="object_guid"/>
+        <result property="domainId" column="domain_id"/>
+        <result property="language" column="language"/>
+        <association property="dept" column="dept_id" javaType="com.dm.cn.common.core.domain.SysDept"
+                     resultMap="deptResult"/>
+        <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
+    </resultMap>
+
+    <resultMap id="deptResult" type="com.dm.cn.common.core.domain.SysDept">
+        <id property="deptId" column="dept_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deptNameEn" column="dept_name_en"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="leader" column="leader"/>
+        <result property="status" column="dept_status"/>
+    </resultMap>
+
+    <resultMap id="RoleResult" type="com.dm.cn.common.core.domain.SysRole">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleNameEn" column="role_name_en"/>
+        <result property="roleSort" column="role_sort"/>
+        <result property="dataScope" column="data_scope"/>
+        <result property="status" column="role_status"/>
+    </resultMap>
+
+    <sql id="selectUserVo">
+        select u.user_id,
+               u.dept_id,
+               u.user_name,
+               u.nick_name,
+               u.email,
+               u.avatar,
+               u.phone_number,
+               u.password,
+               u.sex,
+               u.status,
+               u.del_flag,
+               u.login_ip,
+               u.login_date,
+               u.create_by,
+               u.create_time,
+               u.remark,
+               u.language,
+               d.dept_id,
+               d.parent_id,
+               d.ancestors,
+               d.dept_name,
+               d.dept_name_en,
+               d.order_num,
+               d.leader,
+               d.status as dept_status,
+               r.role_id,
+               r.role_name,
+               r.role_sort,
+               r.data_scope,
+               r.status as role_status
+        from sys_user u
+                 left join sys_dept d on u.dept_id = d.dept_id
+                 left join sys_user_role ur on u.user_id = ur.user_id
+                 left join sys_role r on r.role_id = ur.role_id
+    </sql>
+     <!--h2-->
+    <select id="selectUserList" parameterType="com.dm.cn.common.core.domain.SysUser" resultMap="SysUserResult">
+        select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phone_number, u.sex,
+        u.status,u.DOMAIN_ID,u.language,
+        u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.dept_name_en, d.leader ,r.role_name,r.role_name_en
+        from sys_user
+        u
+        left join sys_dept d on u.dept_id = d.dept_id
+        left join sys_user_role ur on u.user_id = ur.user_id
+        left join sys_role r on r.role_id = ur.role_id
+        where u.del_flag = '0'
+        <if test="userId != null and userId != 0">
+            AND u.user_id = #{userId}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND u.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND u.status = #{status}
+        </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+            AND u.phone_number like concat('%', #{phoneNumber}, '%')
+        </if>
+        <if test="params.beginTime != null and params.beginTime != '' and params.endTime != null and params.endTime != ''" >
+            AND u.create_time BETWEEN #{params.beginTime} AND #{params.endTime}
+        </if>
+        <if test="deptId != null and deptId != 0">
+            AND (u.dept_id = #{deptId} OR u.dept_id IN (
+            WITH
+            <if test="isH2 == true ">
+                RECURSIVE
+            </if>
+            tree_param (dept_id,parent_id) as (
+            select a.dept_id,a.parent_id
+            from sys_dept a
+            where a.dept_id = #{deptId}
+            union all
+            select b.dept_id,b.parent_id
+            from tree_param
+            inner join sys_dept b on tree_param.dept_id= b.parent_id
+            )
+            select dept_id from tree_param)
+            )
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectUserByUserName" parameterType="String" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        where u.user_name = #{userName} and u.del_flag = '0'
+    </select>
+
+    <select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        where u.user_id = #{userId} and u.del_flag = '0'
+    </select>
+
+    <select id="checkUserNameUnique" parameterType="String" resultType="int">
+        select count(1)
+        from sys_user
+        where user_name = #{userName}
+          and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkDomainUserNameUnique" parameterType="String" resultType="int">
+        select count(1)
+        from sys_user
+        where user_name = #{userName}
+          and (object_guid IS NULL OR object_guid != #{uid})
+          and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
+        select user_id, phone_number
+        from sys_user
+        where phone_number = #{phoneNumber}
+          and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
+        select user_id, email
+        from sys_user
+        where email = #{email}
+          and del_flag = '0' limit 1
+    </select>
+
+    <insert id="insertUser" parameterType="com.dm.cn.common.core.domain.SysUser">
+        insert into sys_user(
+        <if test="userId != null and userId != 0">user_id,</if>
+        <if test="deptId != null and deptId != 0">dept_id,</if>
+        <if test="userName != null and userName != ''">user_name,</if>
+        <if test="nickName != null and nickName != ''">nick_name,</if>
+        <if test="email != null and email != ''">email,</if>
+        <if test="avatar != null and avatar != ''">avatar,</if>
+        <if test="phoneNumber != null and phoneNumber != ''">phone_number,</if>
+        <if test="sex != null and sex != ''">sex,</if>
+        <if test="password != null and password != ''">password,</if>
+        <if test="status != null and status != ''">status,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="language != null and language != ''">language,</if>
+        create_time
+        )values(
+        <if test="userId != null and userId != ''">#{userId},</if>
+        <if test="deptId != null and deptId != ''">#{deptId},</if>
+        <if test="userName != null and userName != ''">#{userName},</if>
+        <if test="nickName != null and nickName != ''">#{nickName},</if>
+        <if test="email != null and email != ''">#{email},</if>
+        <if test="avatar != null and avatar != ''">#{avatar},</if>
+        <if test="phoneNumber != null and phoneNumber != ''">#{phoneNumber},</if>
+        <if test="sex != null and sex != ''">#{sex},</if>
+        <if test="password != null and password != ''">#{password},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="language != null and language != ''">#{language},</if>
+        now()
+        )
+    </insert>
+
+    <insert id="insertBatchUser" parameterType="java.util.List">
+        insert into SYS_USER (
+        USER_ID,
+        DEPT_ID,
+        USER_NAME,
+        NICK_NAME,
+        EMAIL,
+        PHONE_NUMBER,
+        PASSWORD,
+        CREATE_BY,
+        CREATE_TIME,
+        DOMAIN_ID,
+        OBJECT_GUID,
+        LANGUAGE
+        )values
+        <foreach item="item" collection="list" separator="," index="i">
+            (
+            #{item.userId},
+            #{item.deptId},
+            #{item.userName},
+            #{item.nickName},
+            #{item.email},
+            #{item.phoneNumber},
+            #{item.password},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.domainId},
+            #{item.objectGuid},
+            #{item.language}
+            )
+        </foreach>
+    </insert>
+
+
+    <update id="updateUser" parameterType="com.dm.cn.common.core.domain.SysUser">
+        update sys_user
+        <set>
+            <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="email != null ">email = #{email},</if>
+            <if test="phoneNumber != null ">phone_number = #{phoneNumber},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+            <if test="loginDate != null">login_date = #{loginDate},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="language != null">language = #{language},</if>
+            update_time = now()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateUserAvatar" parameterType="com.dm.cn.common.core.domain.SysUser">
+        update sys_user
+        set avatar = #{avatar}
+        where user_name = #{userName}
+    </update>
+
+    <update id="resetUserPwd" parameterType="com.dm.cn.common.core.domain.SysUser">
+        update sys_user
+        set password = #{password}
+        where user_name = #{userName}
+    </update>
+
+    <update id="updateBatchUserByUid">
+        <foreach collection="list" item="item" index="index">
+            UPDATE SYS_USER
+            SET USER_NAME =#{item.userName},
+            NICK_NAME = #{item.nickName},
+            PHONE_NUMBER = #{item.phoneNumber},
+            EMAIL = #{item.email}
+            WHERE OBJECT_GUID = #{item.objectGuid};
+        </foreach>
+    </update>
+
+    <delete id="deleteUserById" parameterType="Long">
+        update sys_user
+        set del_flag = '2'
+        where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteUserByIds" parameterType="Long">
+        update sys_user set del_flag = '2' where user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <select id="selectAlarmUser" resultMap="SysUserResult">
+        SELECT U.USER_ID, U.USER_NAME
+        FROM SYS_USER U
+                 LEFT JOIN SYS_DEPT D ON U.DEPT_ID = D.DEPT_ID
+        WHERE U.DEL_FLAG = '0'
+    </select>
+
+    <select id="selectFilterObjectGuid" resultType="java.lang.String">
+        SELECT OBJECT_GUID
+        FROM SYS_USER
+        WHERE DOMAIN_ID = #{domainId}
+          AND DEL_FLAG = '0'
+    </select>
+
+    <select id="getSyncUserList" resultMap="SysUserResult">
+        SELECT USER_ID,
+               USER_NAME,
+               NICK_NAME,
+               PHONE_NUMBER,
+               EMAIL,
+               OBJECT_GUID,
+               CREATE_TIME,
+               DOMAIN_ID
+        FROM SYS_USER
+        WHERE DOMAIN_ID = #{domainId}
+          AND DEL_FLAG = '0'
+    </select>
+
+    <select id="selectUserByIds" resultMap="SysUserResult">
+        SELECT USER_ID,USER_NAME,NICK_NAME,PHONE_NUMBER,EMAIL,OBJECT_GUID,CREATE_TIME,DOMAIN_ID
+        FROM SYS_USER
+        WHERE USER_ID in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND DEL_FLAG = '0'
+    </select>
+
+    <select id="selectDomainUserByUid" resultMap="SysUserResult">
+        SELECT USER_ID,
+               USER_NAME,
+               NICK_NAME,
+               PHONE_NUMBER,
+               EMAIL,
+               OBJECT_GUID,
+               CREATE_TIME,
+               DOMAIN_ID
+        FROM SYS_USER
+        WHERE OBJECT_GUID = #{uid}
+          AND DEL_FLAG = '0'
+    </select>
+
+    <select id="getUserList" resultMap="SysUserResult">
+        SELECT *
+        FROM SYS_USER
+        WHERE STATUS = '0'
+          AND DEL_FLAG = '0'
+    </select>
+
+    <select id="getUserByDeptId" resultType="java.lang.String">
+        SELECT SYS_USER.USER_NAME
+        FROM SYS_USER
+        WHERE STATUS = '0' AND DEL_FLAG = '0'
+        <if test="deptId != null and deptId != 0L">
+            AND DEPT_ID IN (SELECT DEPT_ID FROM SYS_DEPT START WITH DEPT_ID=#{deptId} CONNECT BY PRIOR
+            DEPT_ID=PARENT_ID)
+        </if>
+    </select>
+</mapper>
